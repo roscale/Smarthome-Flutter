@@ -54,9 +54,9 @@ class _AddLightsScreenState extends State<AddLightsScreen> {
       serverSocket.listen((socket) {
         debugPrint("CONNECTED");
 
-        socket.transform(utf8.decoder).listen((data) async {
+        socket.listen((data) async {
           debugPrint("RECEIVED from ${socket.remoteAddress} data -> $data");
-          Map<String, dynamic> json = jsonDecode(data);
+          Map<String, dynamic> json = jsonDecode(utf8.decoder.convert(data));
 
           var light = LightData(json["uuid"], json["name"],
               socket.remoteAddress.address, json["power_state"] == 1);

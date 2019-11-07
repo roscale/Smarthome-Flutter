@@ -39,7 +39,16 @@ class _ConfigureDeviceState extends State<ConfigureDevice> {
             (s) => s.uuid.toString() == "b1d109ed-eb34-4421-8780-841efba77469");
 
         for (BluetoothCharacteristic c in service.characteristics) {
-          List<int> value = await widget.device.readCharacteristic(c);
+          List<int> value;
+          try {
+            value = await widget.device.readCharacteristic(c);
+            print("Charac: $value");
+          } catch (e) {
+            continue;
+            // PlatformException(read_characteristic_error)
+            // Apparently not all characteristics can be read
+          }
+
           setState(() {
             switch (c.uuid.toString()) {
               case "8cdceb63-9875-43a1-af5e-eee545068327":
@@ -88,6 +97,30 @@ class _ConfigureDeviceState extends State<ConfigureDevice> {
     var bytes = "${ssidController.value.text}\n${passwordController.value.text}"
         .codeUnits;
 
+    // Send batch of 19 bytes packets due to BLE protocol limitations
+    const nBytes = 19;
+    for (var i = 0; i <= bytes.length ~/ nBytes; i++) {
+      var start = i * nBytes;
+      var end =
+          (i + 1) * nBytes <= bytes.length ? (i + 1) * nBytes : bytes.length;
+      var flagPacket = (i == (bytes.length ~/ nBytes)) ? 0x02 : 0x01;
+      print("FLAG $flagPacket ${bytes.length ~/ nBytes}");
+
+      widget.device.writeCharacteristic(
+          tx, [flagPacket].followedBy(bytes.getRange(start, end)).toList());
+      await Future.delayed(Duration(milliseconds: 50));
+    }
+  }
+
+  void saveSettings() async {
+    var tx = service.characteristics.singleWhere(
+            (c) => c.uuid.toString() == "67643d0a-6033-483b-b18d-271bcc7901b8");
+
+    var bytes =
+        "${nameController.value.text}\n${ssidController.value.text}\n${passwordController.value.text}"
+            .codeUnits;
+
+    // Send batch of 19 bytes packets due to BLE protocol limitations
     const nBytes = 19;
     for (var i = 0; i <= bytes.length ~/ nBytes; i++) {
       var start = i * nBytes;
@@ -126,7 +159,10 @@ class _ConfigureDeviceState extends State<ConfigureDevice> {
                   ? CircularProgressIndicator()
                   : IconButton(
                       icon: Icon(Icons.save),
-                      onPressed: () => print("saved"),
+                      onPressed: () {
+                        saveSettings();
+                        Navigator.of(context).pop();
+                      },
                       tooltip: "Save",
                     ))
         ],

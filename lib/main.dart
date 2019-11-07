@@ -8,6 +8,7 @@ import 'package:smarthome/pages/lights/AddLightsScreen.dart';
 import 'package:smarthome/pages/lights/LightsPage.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await DatabaseProvider.open();
   runApp(SmarthomeApp());
 }
