@@ -32,42 +32,42 @@ class _ConfigureDeviceState extends State<ConfigureDevice> {
   void gatherInfo() async {
     var flutterBlue = FlutterBlue.instance;
 
-    deviceConnection = flutterBlue.connect(widget.device).listen((s) async {
-      if (s == BluetoothDeviceState.connected) {
-        var services = await widget.device.discoverServices();
-        service = services.singleWhere(
-            (s) => s.uuid.toString() == "b1d109ed-eb34-4421-8780-841efba77469");
-
-        for (BluetoothCharacteristic c in service.characteristics) {
-          List<int> value;
-          try {
-            value = await widget.device.readCharacteristic(c);
-            print("Charac: $value");
-          } catch (e) {
-            continue;
-            // PlatformException(read_characteristic_error)
-            // Apparently not all characteristics can be read
-          }
-
-          setState(() {
-            switch (c.uuid.toString()) {
-              case "8cdceb63-9875-43a1-af5e-eee545068327":
-                ssid = String.fromCharCodes(value);
-                ssidController.value = TextEditingValue(text: ssid);
-                break;
-              case "6cba5470-a064-4479-a4e9-c3a3b479d402":
-                name = String.fromCharCodes(value);
-                nameController.value = TextEditingValue(text: name);
-                break;
-            }
-          });
-        }
-
-        setState(() {
-          loading = false;
-        });
-      }
-    });
+//    deviceConnection = flutterBlue.connect(widget.device).listen((s) async {
+//      if (s == BluetoothDeviceState.connected) {
+//        var services = await widget.device.discoverServices();
+//        service = services.singleWhere(
+//            (s) => s.uuid.toString() == "b1d109ed-eb34-4421-8780-841efba77469");
+//
+//        for (BluetoothCharacteristic c in service.characteristics) {
+//          List<int> value;
+//          try {
+//            value = await widget.device.readCharacteristic(c);
+//            print("Charac: $value");
+//          } catch (e) {
+//            continue;
+//            // PlatformException(read_characteristic_error)
+//            // Apparently not all characteristics can be read
+//          }
+//
+//          setState(() {
+//            switch (c.uuid.toString()) {
+//              case "8cdceb63-9875-43a1-af5e-eee545068327":
+//                ssid = String.fromCharCodes(value);
+//                ssidController.value = TextEditingValue(text: ssid);
+//                break;
+//              case "6cba5470-a064-4479-a4e9-c3a3b479d402":
+//                name = String.fromCharCodes(value);
+//                nameController.value = TextEditingValue(text: name);
+//                break;
+//            }
+//          });
+//        }
+//
+//        setState(() {
+//          loading = false;
+//        });
+//      }
+//    });
 
     deviceConnection.onDone(() => deviceConnection.cancel());
   }
@@ -84,14 +84,14 @@ class _ConfigureDeviceState extends State<ConfigureDevice> {
         (c) => c.uuid.toString() == "0799315c-2ad0-46d4-8070-6fc3539174c2");
 
     // Listen for response
-    await widget.device.setNotifyValue(rx, true);
-    widget.device.onValueChanged(rx).listen((value) {
-      setState(() {
-        testWaiting = false;
-        testInitiated = true;
-        testConnected = value[0] == 1;
-      });
-    });
+//    await widget.device.setNotifyValue(rx, true);
+//    widget.device.onValueChanged(rx).listen((value) {
+//      setState(() {
+//        testWaiting = false;
+//        testInitiated = true;
+//        testConnected = value[0] == 1;
+//      });
+//    });
 
     // Send SSID and PSK for test
     var bytes = "${ssidController.value.text}\n${passwordController.value.text}"
@@ -106,9 +106,9 @@ class _ConfigureDeviceState extends State<ConfigureDevice> {
       var flagPacket = (i == (bytes.length ~/ nBytes)) ? 0x02 : 0x01;
       print("FLAG $flagPacket ${bytes.length ~/ nBytes}");
 
-      widget.device.writeCharacteristic(
-          tx, [flagPacket].followedBy(bytes.getRange(start, end)).toList());
-      await Future.delayed(Duration(milliseconds: 50));
+//      widget.device.writeCharacteristic(
+//          tx, [flagPacket].followedBy(bytes.getRange(start, end)).toList());
+//      await Future.delayed(Duration(milliseconds: 50));
     }
   }
 
@@ -129,9 +129,9 @@ class _ConfigureDeviceState extends State<ConfigureDevice> {
       var flagPacket = (i == (bytes.length ~/ nBytes)) ? 0x02 : 0x01;
       print("FLAG $flagPacket ${bytes.length ~/ nBytes}");
 
-      widget.device.writeCharacteristic(
-          tx, [flagPacket].followedBy(bytes.getRange(start, end)).toList());
-      await Future.delayed(Duration(milliseconds: 50));
+//      widget.device.writeCharacteristic(
+//          tx, [flagPacket].followedBy(bytes.getRange(start, end)).toList());
+//      await Future.delayed(Duration(milliseconds: 50));
     }
   }
 

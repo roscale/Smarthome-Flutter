@@ -14,49 +14,49 @@ class _ConfigureScreenState extends State<ConfigureScreen> {
   bool searching = false;
 
   void discoverDevices() async {
-    BluetoothState state = await FlutterBlue.instance.state;
-    bluetoothOn = (state == BluetoothState.on);
-
-    if (!bluetoothOn) {
-      showDialog<void>(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Failed to scan for devices'),
-              content: SingleChildScrollView(
-                child: Text('Please turn on Bluetooth and refresh.'),
-              ),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('Ok'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          });
-
-      return;
-    }
-
-    FlutterBlue.instance
-        .scan(timeout: Duration(seconds: 2))
-        .listen((scanResult) {
-      if (scanResult.advertisementData.serviceUuids
-          .contains("b1d109ed-eb34-4421-8780-841efba77469")) {
-        devices.putIfAbsent(scanResult.device.id.id, () => scanResult.device);
-        setState(() {});
-      }
-    });
-
-    setState(() {
-      searching = true;
-    });
-
-    Future.delayed(Duration(seconds: 2))
-        .then((_) => setState(() => searching = false));
+//    BluetoothState state = await FlutterBlue.instance.state;
+//    bluetoothOn = (state == BluetoothState.on);
+//
+//    if (!bluetoothOn) {
+//      showDialog<void>(
+//          context: context,
+//          barrierDismissible: false,
+//          builder: (BuildContext context) {
+//            return AlertDialog(
+//              title: Text('Failed to scan for devices'),
+//              content: SingleChildScrollView(
+//                child: Text('Please turn on Bluetooth and refresh.'),
+//              ),
+//              actions: <Widget>[
+//                FlatButton(
+//                  child: Text('Ok'),
+//                  onPressed: () {
+//                    Navigator.of(context).pop();
+//                  },
+//                ),
+//              ],
+//            );
+//          });
+//
+//      return;
+//    }
+//
+//    FlutterBlue.instance
+//        .scan(timeout: Duration(seconds: 2))
+//        .listen((scanResult) {
+//      if (scanResult.advertisementData.serviceUuids
+//          .contains("b1d109ed-eb34-4421-8780-841efba77469")) {
+//        devices.putIfAbsent(scanResult.device.id.id, () => scanResult.device);
+//        setState(() {});
+//      }
+//    });
+//
+//    setState(() {
+//      searching = true;
+//    });
+//
+//    Future.delayed(Duration(seconds: 2))
+//        .then((_) => setState(() => searching = false));
   }
 
   @override
