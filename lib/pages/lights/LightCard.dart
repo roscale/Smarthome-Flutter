@@ -3,12 +3,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:smarthome/custom_widgets/LightBlocProvider.dart';
-import 'package:smarthome/db/DatabaseProvider.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
+import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:smarthome/custom_widgets/RenameDialog.dart';
+import 'package:smarthome/database/database.dart';
 
 class LightCard extends StatefulWidget {
-  final LightDTO light;
+  final Device light;
 
   LightCard({key, this.light}) : super(key: key);
 
@@ -17,22 +18,28 @@ class LightCard extends StatefulWidget {
 }
 
 class _LightCardState extends State<LightCard> {
-  LightDTO light;
+  MyDatabase db = kiwi.Container().resolve<MyDatabase>();
+  DevicesCompanion light;
 
   @override
   void initState() {
     super.initState();
-    light = widget.light;
+    light = widget.light.createCompanion(true);
   }
 
   void toggleLight() {
     setState(() {
-      light.powerState = 1 - light.powerState;
-      DatabaseProvider.turnLight(light.powerState == 1, light.uuid);
+      light =
+          light.copyWith(powerState: moor.Value(1 - light.powerState.value));
 
-      Socket.connect(InternetAddress(light.ip), 8088).then((socket) {
-        socket.add(Utf8Codec().encode(light.powerState == 1 ? "on" : "off"));
-        socket.close();
+      db.devicesDao.turnDevice(light.powerState.value, light.uuid.value);
+
+      Socket.connect(InternetAddress(light.ip.value), 8088)
+          .then((socket) async {
+        socket.add(
+            Utf8Codec().encode(light.powerState.value == 1 ? "on" : "off"));
+        await socket.flush();
+        await socket.close();
       });
     });
   }
@@ -49,26 +56,28 @@ class _LightCardState extends State<LightCard> {
                   IconButton(
                     icon: Icon(Icons.lightbulb_outline),
                     iconSize: 60,
-                    color: light.powerState == 1 ? Colors.amber : Colors.grey,
+                    color: light.powerState.value == 1
+                        ? Colors.amber
+                        : Colors.grey,
                     tooltip: "Toggle",
                     onPressed: toggleLight,
                   ),
-                  Text(light.name)
+                  Text(light.name.value)
                 ]),
           ),
           Align(
               alignment: Alignment.bottomRight,
               child: PopupMenuButton<String>(
                 itemBuilder: (BuildContext context) => [
-                      PopupMenuItem<String>(
-                        value: "rename",
-                        child: Text("Rename"),
-                      ),
-                      PopupMenuItem<String>(
-                        value: "delete",
-                        child: Text("Delete"),
-                      )
-                    ],
+                  PopupMenuItem<String>(
+                    value: "rename",
+                    child: Text("Rename"),
+                  ),
+                  PopupMenuItem<String>(
+                    value: "delete",
+                    child: Text("Delete"),
+                  )
+                ],
                 onSelected: (value) async {
                   switch (value) {
                     case "rename":
@@ -76,16 +85,15 @@ class _LightCardState extends State<LightCard> {
                           context: context,
                           onRename: (name) {
                             setState(() {
-                              light.name = name;
+                              light = light.copyWith(name: moor.Value(name));
                             });
-                            DatabaseProvider.renameLight(
-                                light.name, light.uuid);
+
+                            db.devicesDao.updateDevice(light);
                             Navigator.of(context).pop();
                           });
                       break;
                     case "delete":
-                      await DatabaseProvider.deleteLight(light.uuid);
-                      LightBlocProvider.of(context).fetchAllLights();
+                      db.devicesDao.deleteDevice(light.uuid.value);
                       break;
                   }
                 },

@@ -5,5 +5,5 @@ class Devices extends Table {
   TextColumn get uuid => text()();
   TextColumn get name => text()();
   TextColumn get ip => text()();
-  TextColumn get power_state => text()();
+  IntColumn get powerState => integer().named("power_state")();
 }

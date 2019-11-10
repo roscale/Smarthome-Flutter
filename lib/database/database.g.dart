@@ -12,13 +12,13 @@ class Device extends DataClass implements Insertable<Device> {
   final String uuid;
   final String name;
   final String ip;
-  final String power_state;
+  final int powerState;
   Device(
       {@required this.id,
       @required this.uuid,
       @required this.name,
       @required this.ip,
-      @required this.power_state});
+      @required this.powerState});
   factory Device.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -29,7 +29,7 @@ class Device extends DataClass implements Insertable<Device> {
       uuid: stringType.mapFromDatabaseResponse(data['${effectivePrefix}uuid']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       ip: stringType.mapFromDatabaseResponse(data['${effectivePrefix}ip']),
-      power_state: stringType
+      powerState: intType
           .mapFromDatabaseResponse(data['${effectivePrefix}power_state']),
     );
   }
@@ -40,7 +40,7 @@ class Device extends DataClass implements Insertable<Device> {
       uuid: serializer.fromJson<String>(json['uuid']),
       name: serializer.fromJson<String>(json['name']),
       ip: serializer.fromJson<String>(json['ip']),
-      power_state: serializer.fromJson<String>(json['power_state']),
+      powerState: serializer.fromJson<int>(json['powerState']),
     );
   }
   @override
@@ -51,7 +51,7 @@ class Device extends DataClass implements Insertable<Device> {
       'uuid': serializer.toJson<String>(uuid),
       'name': serializer.toJson<String>(name),
       'ip': serializer.toJson<String>(ip),
-      'power_state': serializer.toJson<String>(power_state),
+      'powerState': serializer.toJson<int>(powerState),
     };
   }
 
@@ -62,20 +62,20 @@ class Device extends DataClass implements Insertable<Device> {
       uuid: uuid == null && nullToAbsent ? const Value.absent() : Value(uuid),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       ip: ip == null && nullToAbsent ? const Value.absent() : Value(ip),
-      power_state: power_state == null && nullToAbsent
+      powerState: powerState == null && nullToAbsent
           ? const Value.absent()
-          : Value(power_state),
+          : Value(powerState),
     );
   }
 
   Device copyWith(
-          {int id, String uuid, String name, String ip, String power_state}) =>
+          {int id, String uuid, String name, String ip, int powerState}) =>
       Device(
         id: id ?? this.id,
         uuid: uuid ?? this.uuid,
         name: name ?? this.name,
         ip: ip ?? this.ip,
-        power_state: power_state ?? this.power_state,
+        powerState: powerState ?? this.powerState,
       );
   @override
   String toString() {
@@ -84,7 +84,7 @@ class Device extends DataClass implements Insertable<Device> {
           ..write('uuid: $uuid, ')
           ..write('name: $name, ')
           ..write('ip: $ip, ')
-          ..write('power_state: $power_state')
+          ..write('powerState: $powerState')
           ..write(')'))
         .toString();
   }
@@ -93,7 +93,7 @@ class Device extends DataClass implements Insertable<Device> {
   int get hashCode => $mrjf($mrjc(
       id.hashCode,
       $mrjc(uuid.hashCode,
-          $mrjc(name.hashCode, $mrjc(ip.hashCode, power_state.hashCode)))));
+          $mrjc(name.hashCode, $mrjc(ip.hashCode, powerState.hashCode)))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
@@ -102,7 +102,7 @@ class Device extends DataClass implements Insertable<Device> {
           other.uuid == this.uuid &&
           other.name == this.name &&
           other.ip == this.ip &&
-          other.power_state == this.power_state);
+          other.powerState == this.powerState);
 }
 
 class DevicesCompanion extends UpdateCompanion<Device> {
@@ -110,36 +110,36 @@ class DevicesCompanion extends UpdateCompanion<Device> {
   final Value<String> uuid;
   final Value<String> name;
   final Value<String> ip;
-  final Value<String> power_state;
+  final Value<int> powerState;
   const DevicesCompanion({
     this.id = const Value.absent(),
     this.uuid = const Value.absent(),
     this.name = const Value.absent(),
     this.ip = const Value.absent(),
-    this.power_state = const Value.absent(),
+    this.powerState = const Value.absent(),
   });
   DevicesCompanion.insert({
     this.id = const Value.absent(),
     @required String uuid,
     @required String name,
     @required String ip,
-    @required String power_state,
+    @required int powerState,
   })  : uuid = Value(uuid),
         name = Value(name),
         ip = Value(ip),
-        power_state = Value(power_state);
+        powerState = Value(powerState);
   DevicesCompanion copyWith(
       {Value<int> id,
       Value<String> uuid,
       Value<String> name,
       Value<String> ip,
-      Value<String> power_state}) {
+      Value<int> powerState}) {
     return DevicesCompanion(
       id: id ?? this.id,
       uuid: uuid ?? this.uuid,
       name: name ?? this.name,
       ip: ip ?? this.ip,
-      power_state: power_state ?? this.power_state,
+      powerState: powerState ?? this.powerState,
     );
   }
 }
@@ -193,14 +193,12 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
     );
   }
 
-  final VerificationMeta _power_stateMeta =
-      const VerificationMeta('power_state');
-  GeneratedTextColumn _power_state;
+  final VerificationMeta _powerStateMeta = const VerificationMeta('powerState');
+  GeneratedIntColumn _powerState;
   @override
-  GeneratedTextColumn get power_state =>
-      _power_state ??= _constructPowerState();
-  GeneratedTextColumn _constructPowerState() {
-    return GeneratedTextColumn(
+  GeneratedIntColumn get powerState => _powerState ??= _constructPowerState();
+  GeneratedIntColumn _constructPowerState() {
+    return GeneratedIntColumn(
       'power_state',
       $tableName,
       false,
@@ -208,7 +206,7 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, uuid, name, ip, power_state];
+  List<GeneratedColumn> get $columns => [id, uuid, name, ip, powerState];
   @override
   $DevicesTable get asDslTable => this;
   @override
@@ -241,11 +239,11 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
     } else if (ip.isRequired && isInserting) {
       context.missing(_ipMeta);
     }
-    if (d.power_state.present) {
-      context.handle(_power_stateMeta,
-          power_state.isAcceptableValue(d.power_state.value, _power_stateMeta));
-    } else if (power_state.isRequired && isInserting) {
-      context.missing(_power_stateMeta);
+    if (d.powerState.present) {
+      context.handle(_powerStateMeta,
+          powerState.isAcceptableValue(d.powerState.value, _powerStateMeta));
+    } else if (powerState.isRequired && isInserting) {
+      context.missing(_powerStateMeta);
     }
     return context;
   }
@@ -273,8 +271,8 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
     if (d.ip.present) {
       map['ip'] = Variable<String, StringType>(d.ip.value);
     }
-    if (d.power_state.present) {
-      map['power_state'] = Variable<String, StringType>(d.power_state.value);
+    if (d.powerState.present) {
+      map['power_state'] = Variable<int, IntType>(d.powerState.value);
     }
     return map;
   }
@@ -289,6 +287,8 @@ abstract class _$MyDatabase extends GeneratedDatabase {
   _$MyDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $DevicesTable _devices;
   $DevicesTable get devices => _devices ??= $DevicesTable(this);
+  DevicesDao _devicesDao;
+  DevicesDao get devicesDao => _devicesDao ??= DevicesDao(this as MyDatabase);
   @override
   List<TableInfo> get allTables => [devices];
 }

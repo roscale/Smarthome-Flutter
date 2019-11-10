@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class HomeDrawer extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -17,7 +16,6 @@ class HomeDrawer extends StatelessWidget {
                   "assets/images/drawer-header.jpg",
                   fit: BoxFit.fill,
                 ),
-
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: Column(
@@ -29,7 +27,13 @@ class HomeDrawer extends StatelessWidget {
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.only(bottom: 5),
-                            child: Text("Smarthome", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500),),
+                            child: Text(
+                              "Smarthome",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500),
+                            ),
                           ),
 //                          Text(university, style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),)
                         ],

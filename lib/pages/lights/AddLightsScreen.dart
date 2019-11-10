@@ -3,16 +3,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:smarthome/custom_widgets/LightBlocProvider.dart';
-import 'package:smarthome/db/DatabaseProvider.dart';
+import 'package:moor_flutter/moor_flutter.dart';
+import 'package:smarthome/database/database.dart';
 import 'package:smarthome/pages/lights/AddLightsItem.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 class LightData {
   String uuid;
   String name;
   String ip;
-  bool powerState;
+  int powerState;
 
   bool checked = true;
 
@@ -25,6 +26,7 @@ class AddLightsScreen extends StatefulWidget {
 }
 
 class _AddLightsScreenState extends State<AddLightsScreen> {
+  MyDatabase db = kiwi.Container().resolve<MyDatabase>();
   ServerSocket serverSocket;
   List<LightData> lights = [];
   bool searching = true;
@@ -35,7 +37,11 @@ class _AddLightsScreenState extends State<AddLightsScreen> {
     });
 
     Future.delayed(Duration(seconds: 2))
-        .then((_) => setState(() => searching = false));
+        .then((_) {
+          if (mounted) {
+            setState(() => searching = false);
+          }
+        });
 
     Fluttertoast.showToast(
       msg: "Searching lights...",
@@ -59,9 +65,10 @@ class _AddLightsScreenState extends State<AddLightsScreen> {
           Map<String, dynamic> json = jsonDecode(utf8.decoder.convert(data));
 
           var light = LightData(json["uuid"], json["name"],
-              socket.remoteAddress.address, json["power_state"] == 1);
+              socket.remoteAddress.address, json["power_state"]);
 
-          if (await DatabaseProvider.getLightByUUID(json["uuid"]) == null) {
+          // If the device isn't already added
+          if (await db.devicesDao.getDeviceByUUID(json["uuid"]) == null) {
             setState(() {
               lights.add(light);
               debugPrint("LIGHT ${light.uuid} ${json["power_state"]}");
@@ -84,10 +91,13 @@ class _AddLightsScreenState extends State<AddLightsScreen> {
 
   void addSelectedLights() async {
     lights.where((light) => light.checked).forEach((light) async {
-      await DatabaseProvider.insertLight(
-          LightDTO(light.uuid, light.ip, light.name, light.powerState ? 1 : 0));
+      db.devicesDao.insertDevice(DevicesCompanion(
+          uuid: Value(light.uuid),
+          name: Value(light.name),
+          ip: Value(light.ip),
+          powerState: Value(light.powerState),
+      ));
     });
-    LightBlocProvider.of(context).fetchAllLights();
     Navigator.of(context).pop();
   }
 
