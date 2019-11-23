@@ -38,7 +38,6 @@ class _LightCardState extends State<LightCard> {
           .then((socket) async {
         socket.add(
             Utf8Codec().encode(light.powerState.value == 1 ? "on" : "off"));
-        await socket.flush();
         await socket.close();
       });
     });

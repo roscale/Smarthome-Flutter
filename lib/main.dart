@@ -1,13 +1,34 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 import 'package:smarthome/database/database.dart';
 import 'package:smarthome/pages/configuration/ConfigureScreen.dart';
 import 'package:smarthome/pages/lights/AddLightsScreen.dart';
 import 'package:smarthome/pages/lights/LightsPage.dart';
+import 'package:udp/udp.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   kiwi.Container().registerInstance(MyDatabase());
+
+  var receiver = await UDP.bind(Endpoint.broadcast(port: Port(1234)));
+
+  // receiving/listening
+  receiver.listen((datagram) {
+    var str = String.fromCharCodes(datagram.data);
+    if (str == "heartbeat") {
+      Socket.connect(datagram.address, 8088)
+          .then((socket) async {
+        socket.add(
+            Utf8Codec().encode("stay_on"));
+        await socket.close();
+      });
+    }
+
+  }, Duration(days: 365));
+
   runApp(SmarthomeApp());
 }
 
