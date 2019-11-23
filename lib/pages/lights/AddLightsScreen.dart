@@ -83,7 +83,7 @@ class _AddLightsScreenState extends State<AddLightsScreen> {
     RawDatagramSocket.bind(InternetAddress.anyIPv4, 0).then((socket) {
       socket.broadcastEnabled = true;
       var written = socket.send(Utf8Codec().encode("discovery"),
-          InternetAddress("192.168.0.255"), 9997);
+          InternetAddress("255.255.255.255"), 9997);
       debugPrint("descovery sent $written");
       socket.close();
     });
