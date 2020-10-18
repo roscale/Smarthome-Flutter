@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:kiwi/kiwi.dart' as kiwi;
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:smarthome/custom_widgets/RenameDialog.dart';
 import 'package:smarthome/database/database.dart';
+import 'package:smarthome/services.dart';
 
 class LightCard extends StatefulWidget {
   final Device light;
@@ -18,13 +18,13 @@ class LightCard extends StatefulWidget {
 }
 
 class _LightCardState extends State<LightCard> {
-  MyDatabase db = kiwi.Container().resolve<MyDatabase>();
+  MyDatabase db = getIt<MyDatabase>();
   DevicesCompanion light;
 
   @override
   void initState() {
     super.initState();
-    light = widget.light.createCompanion(true);
+    light = widget.light.toCompanion(true);
   }
 
   void toggleLight() {

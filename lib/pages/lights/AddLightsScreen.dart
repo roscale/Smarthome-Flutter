@@ -7,7 +7,7 @@ import 'package:moor_flutter/moor_flutter.dart';
 import 'package:smarthome/database/database.dart';
 import 'package:smarthome/pages/lights/AddLightsItem.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:kiwi/kiwi.dart' as kiwi;
+import 'package:smarthome/services.dart';
 
 class LightData {
   String uuid;
@@ -26,7 +26,7 @@ class AddLightsScreen extends StatefulWidget {
 }
 
 class _AddLightsScreenState extends State<AddLightsScreen> {
-  MyDatabase db = kiwi.Container().resolve<MyDatabase>();
+  MyDatabase db = getIt<MyDatabase>();
   ServerSocket serverSocket;
   List<LightData> lights = [];
   bool searching = true;
@@ -47,7 +47,6 @@ class _AddLightsScreenState extends State<AddLightsScreen> {
       msg: "Searching lights...",
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
-      timeInSecForIos: 2,
     );
 
     sendDiscoverySignal();

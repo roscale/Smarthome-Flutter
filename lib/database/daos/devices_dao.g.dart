@@ -7,5 +7,5 @@ part of 'devices_dao.dart';
 // **************************************************************************
 
 mixin _$DevicesDaoMixin on DatabaseAccessor<MyDatabase> {
-  $DevicesTable get devices => db.devices;
+  $DevicesTable get devices => attachedDatabase.devices;
 }

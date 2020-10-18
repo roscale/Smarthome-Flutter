@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:kiwi/kiwi.dart' as kiwi;
 import 'package:smarthome/HomeDrawer.dart';
 import 'package:smarthome/database/database.dart';
 import 'package:smarthome/pages/lights/LightCard.dart';
+import 'package:smarthome/services.dart';
 
 class LightsPage extends StatefulWidget {
   @override
@@ -11,7 +11,7 @@ class LightsPage extends StatefulWidget {
 }
 
 class _LightsPageState extends State<LightsPage> {
-  MyDatabase db = kiwi.Container().resolve<MyDatabase>();
+  MyDatabase db = getIt<MyDatabase>();
 
   @override
   Widget build(BuildContext context) {

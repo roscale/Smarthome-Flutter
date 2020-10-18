@@ -33,30 +33,28 @@ class Device extends DataClass implements Insertable<Device> {
           .mapFromDatabaseResponse(data['${effectivePrefix}power_state']),
     );
   }
-  factory Device.fromJson(Map<String, dynamic> json,
-      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
-    return Device(
-      id: serializer.fromJson<int>(json['id']),
-      uuid: serializer.fromJson<String>(json['uuid']),
-      name: serializer.fromJson<String>(json['name']),
-      ip: serializer.fromJson<String>(json['ip']),
-      powerState: serializer.fromJson<int>(json['powerState']),
-    );
-  }
   @override
-  Map<String, dynamic> toJson(
-      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
-    return {
-      'id': serializer.toJson<int>(id),
-      'uuid': serializer.toJson<String>(uuid),
-      'name': serializer.toJson<String>(name),
-      'ip': serializer.toJson<String>(ip),
-      'powerState': serializer.toJson<int>(powerState),
-    };
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || uuid != null) {
+      map['uuid'] = Variable<String>(uuid);
+    }
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || ip != null) {
+      map['ip'] = Variable<String>(ip);
+    }
+    if (!nullToAbsent || powerState != null) {
+      map['power_state'] = Variable<int>(powerState);
+    }
+    return map;
   }
 
-  @override
-  DevicesCompanion createCompanion(bool nullToAbsent) {
+  DevicesCompanion toCompanion(bool nullToAbsent) {
     return DevicesCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       uuid: uuid == null && nullToAbsent ? const Value.absent() : Value(uuid),
@@ -66,6 +64,29 @@ class Device extends DataClass implements Insertable<Device> {
           ? const Value.absent()
           : Value(powerState),
     );
+  }
+
+  factory Device.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Device(
+      id: serializer.fromJson<int>(json['id']),
+      uuid: serializer.fromJson<String>(json['uuid']),
+      name: serializer.fromJson<String>(json['name']),
+      ip: serializer.fromJson<String>(json['ip']),
+      powerState: serializer.fromJson<int>(json['powerState']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'uuid': serializer.toJson<String>(uuid),
+      'name': serializer.toJson<String>(name),
+      'ip': serializer.toJson<String>(ip),
+      'powerState': serializer.toJson<int>(powerState),
+    };
   }
 
   Device copyWith(
@@ -95,7 +116,7 @@ class Device extends DataClass implements Insertable<Device> {
       $mrjc(uuid.hashCode,
           $mrjc(name.hashCode, $mrjc(ip.hashCode, powerState.hashCode)))));
   @override
-  bool operator ==(other) =>
+  bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Device &&
           other.id == this.id &&
@@ -128,6 +149,22 @@ class DevicesCompanion extends UpdateCompanion<Device> {
         name = Value(name),
         ip = Value(ip),
         powerState = Value(powerState);
+  static Insertable<Device> custom({
+    Expression<int> id,
+    Expression<String> uuid,
+    Expression<String> name,
+    Expression<String> ip,
+    Expression<int> powerState,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (uuid != null) 'uuid': uuid,
+      if (name != null) 'name': name,
+      if (ip != null) 'ip': ip,
+      if (powerState != null) 'power_state': powerState,
+    });
+  }
+
   DevicesCompanion copyWith(
       {Value<int> id,
       Value<String> uuid,
@@ -141,6 +178,39 @@ class DevicesCompanion extends UpdateCompanion<Device> {
       ip: ip ?? this.ip,
       powerState: powerState ?? this.powerState,
     );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (ip.present) {
+      map['ip'] = Variable<String>(ip.value);
+    }
+    if (powerState.present) {
+      map['power_state'] = Variable<int>(powerState.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DevicesCompanion(')
+          ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('name: $name, ')
+          ..write('ip: $ip, ')
+          ..write('powerState: $powerState')
+          ..write(')'))
+        .toString();
   }
 }
 
@@ -214,35 +284,36 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
   @override
   final String actualTableName = 'devices';
   @override
-  VerificationContext validateIntegrity(DevicesCompanion d,
+  VerificationContext validateIntegrity(Insertable<Device> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
-    } else if (id.isRequired && isInserting) {
-      context.missing(_idMeta);
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
     }
-    if (d.uuid.present) {
+    if (data.containsKey('uuid')) {
       context.handle(
-          _uuidMeta, uuid.isAcceptableValue(d.uuid.value, _uuidMeta));
-    } else if (uuid.isRequired && isInserting) {
+          _uuidMeta, uuid.isAcceptableOrUnknown(data['uuid'], _uuidMeta));
+    } else if (isInserting) {
       context.missing(_uuidMeta);
     }
-    if (d.name.present) {
+    if (data.containsKey('name')) {
       context.handle(
-          _nameMeta, name.isAcceptableValue(d.name.value, _nameMeta));
-    } else if (name.isRequired && isInserting) {
+          _nameMeta, name.isAcceptableOrUnknown(data['name'], _nameMeta));
+    } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (d.ip.present) {
-      context.handle(_ipMeta, ip.isAcceptableValue(d.ip.value, _ipMeta));
-    } else if (ip.isRequired && isInserting) {
+    if (data.containsKey('ip')) {
+      context.handle(_ipMeta, ip.isAcceptableOrUnknown(data['ip'], _ipMeta));
+    } else if (isInserting) {
       context.missing(_ipMeta);
     }
-    if (d.powerState.present) {
-      context.handle(_powerStateMeta,
-          powerState.isAcceptableValue(d.powerState.value, _powerStateMeta));
-    } else if (powerState.isRequired && isInserting) {
+    if (data.containsKey('power_state')) {
+      context.handle(
+          _powerStateMeta,
+          powerState.isAcceptableOrUnknown(
+              data['power_state'], _powerStateMeta));
+    } else if (isInserting) {
       context.missing(_powerStateMeta);
     }
     return context;
@@ -254,27 +325,6 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
   Device map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
     return Device.fromData(data, _db, prefix: effectivePrefix);
-  }
-
-  @override
-  Map<String, Variable> entityToSql(DevicesCompanion d) {
-    final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
-    }
-    if (d.uuid.present) {
-      map['uuid'] = Variable<String, StringType>(d.uuid.value);
-    }
-    if (d.name.present) {
-      map['name'] = Variable<String, StringType>(d.name.value);
-    }
-    if (d.ip.present) {
-      map['ip'] = Variable<String, StringType>(d.ip.value);
-    }
-    if (d.powerState.present) {
-      map['power_state'] = Variable<int, IntType>(d.powerState.value);
-    }
-    return map;
   }
 
   @override
@@ -290,5 +340,7 @@ abstract class _$MyDatabase extends GeneratedDatabase {
   DevicesDao _devicesDao;
   DevicesDao get devicesDao => _devicesDao ??= DevicesDao(this as MyDatabase);
   @override
-  List<TableInfo> get allTables => [devices];
+  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  @override
+  List<DatabaseSchemaEntity> get allSchemaEntities => [devices];
 }
