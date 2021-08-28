@@ -1,4 +1,4 @@
-package ro.roscale.smarthome
+package ro.roscale.smarthome_new
 
 import io.flutter.embedding.android.FlutterActivity
 

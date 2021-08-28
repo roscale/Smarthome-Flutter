@@ -7,15 +7,15 @@ import 'package:flutter_blue/flutter_blue.dart';
 class ConfigureDevice extends StatefulWidget {
   final BluetoothDevice device;
 
-  ConfigureDevice({key, this.device}) : super(key: key);
+  ConfigureDevice({key, required this.device}) : super(key: key);
 
   @override
   _ConfigureDeviceState createState() => _ConfigureDeviceState();
 }
 
 class _ConfigureDeviceState extends State<ConfigureDevice> {
-  StreamSubscription<BluetoothDeviceState> deviceConnection;
-  BluetoothService service;
+  late StreamSubscription<BluetoothDeviceState> deviceConnection;
+  late BluetoothService service;
 
   var loading = true;
   var name = "";

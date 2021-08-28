@@ -4,7 +4,7 @@ class RenameDialog {
   String text = "";
 
   RenameDialog(
-      {@required BuildContext context, @required Function(String) onRename}) {
+      {required BuildContext context, required Function(String) onRename}) {
     showDialog(
         context: context,
         builder: (context) {
