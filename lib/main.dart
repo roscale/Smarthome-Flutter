@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:smarthome/bluetooth_light_controller.dart';
 import 'package:smarthome/pages/dashboard.dart';
+import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
+import 'package:smarthome/providers/light_list.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Background low power scan in case new lights show up
-  FlutterBlue.instance.scan(
-    scanMode: ScanMode.lowPower,
-  );
-
-  FlutterBlue.instance.scanResults.listen((event) {
-    print("results: $event");
-  });
+  GetIt.I.registerSingleton(BluetoothLightController());
 
   runApp(SmarthomeApp());
 }
@@ -30,7 +26,10 @@ class SmarthomeApp extends StatelessWidget {
       ),
       initialRoute: '/dashboard',
       routes: {
-        '/dashboard': (context) => Dashboard(),
+        '/dashboard': (context) => ChangeNotifierProvider(
+              create: (_) => LightList(),
+              child: Dashboard(),
+            ),
       },
     );
   }

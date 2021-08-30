@@ -202,13 +202,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_blue:
+  flutter_bluetooth_serial:
     dependency: "direct main"
     description:
-      name: flutter_blue
+      name: flutter_bluetooth_serial
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.0"
+    version: "0.4.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -338,6 +338,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.5.1"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   package_config:
     dependency: transitive
     description:
@@ -366,13 +373,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.0"
-  protobuf:
-    dependency: transitive
+  provider:
+    dependency: "direct main"
     description:
-      name: protobuf
+      name: provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "6.0.0"
   pub_semver:
     dependency: transitive
     description:
@@ -562,4 +569,4 @@ packages:
     version: "3.1.0"
 sdks:
   dart: ">=2.13.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.6"
+  flutter: ">=1.17.0"

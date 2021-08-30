@@ -8,7 +8,6 @@ void showNewLightBottomSheet(BuildContext context) {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            // crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text("New light", style: TextStyle(fontSize: 30)),
               Container(height: 20),

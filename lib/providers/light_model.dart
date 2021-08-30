@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:get_it/get_it.dart';
+import 'package:smarthome/bluetooth_light_controller.dart';
 
 class LightModel with ChangeNotifier {
   BluetoothDevice? _bluetoothDevice;
   String? _ipv4Address;
   bool _isConfigured = true;
   String uuid;
-  late String name;
-  late bool isOn;
+  String name;
+  bool _isOn = false;
+  bool isLoading = false;
 
-  LightModel(this.uuid);
+  LightModel(this.uuid, this.name, this._isOn);
 
   BluetoothDevice? get bluetoothDevice => _bluetoothDevice;
 
@@ -30,6 +33,22 @@ class LightModel with ChangeNotifier {
   set isConfigured(bool value) {
     _isConfigured = value;
     notifyListeners();
+  }
+
+  bool get isOn => _isOn;
+
+  set isOn(bool value) {
+    isLoading = true;
+    notifyListeners();
+    () async {
+      try {
+        await GetIt.I.get<BluetoothLightController>().turn(_bluetoothDevice!, value);
+        _isOn = value;
+      } finally {
+        isLoading = false;
+        notifyListeners();
+      }
+    }();
   }
 
   bool isReachableViaBluetooth() => _bluetoothDevice != null;
