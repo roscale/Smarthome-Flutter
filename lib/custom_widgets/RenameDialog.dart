@@ -25,14 +25,14 @@ class RenameDialog {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text(
                             'CANCEL',
                             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amberAccent),
                           ),
                           onPressed: Navigator.of(context).pop,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text(
                             'RENAME',
                             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amberAccent),

@@ -42,13 +42,6 @@ class BluetoothLightController {
         connection.finish();
       }
     }
-
-    // });
-    // await discoveryStreamSubscription.asFuture();
-    // discoveryStreamSubscription.
-    // cancel
-    // (
-    // );
   }
 
   Future<void> turn(BluetoothDevice device, bool on) async {

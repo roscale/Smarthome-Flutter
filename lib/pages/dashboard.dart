@@ -4,6 +4,7 @@ import 'package:smarthome/bluetooth_light_controller.dart';
 import 'package:smarthome/custom_widgets/light.dart';
 import 'package:provider/provider.dart';
 import 'package:smarthome/providers/light_list.dart';
+import 'package:smarthome/wifi_light_controller.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -21,14 +22,14 @@ class _DashboardState extends State<Dashboard> {
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () async {
+              // Scan wifi
+              GetIt.I.get<WiFiLightController>().discoverLights();
+
               // Scan bluetooth
               await for (var info in GetIt.I.get<BluetoothLightController>().discoverLights()) {
                 var light = lightList.getLight(info.lightInfo.uuid) ?? lightList.addLight(info.lightInfo);
                 light.bluetoothDevice = info.bluetoothDevice;
               }
-
-              // Scan wifi
-              // TODO
             },
           )
         ],
