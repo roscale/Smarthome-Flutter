@@ -31,6 +31,7 @@ dependencies:
   fluttertoast: ^8.0.8
   flutter_bluetooth_serial: ^0.4.0
   udp: ^3.0.3
+  network_info_plus: ^1.1.0
 
 dev_dependencies:
   moor_generator: ^4.5.1

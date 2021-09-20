@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:get_it/get_it.dart';
 import 'package:smarthome/bluetooth_light_controller.dart';
+import 'package:smarthome/locator.dart';
 import 'package:smarthome/wifi_light_controller.dart';
 
 class LightModel with ChangeNotifier {
@@ -38,26 +38,40 @@ class LightModel with ChangeNotifier {
 
   bool get isOn => _isOn;
 
-  set isOn(bool value) {
+  Future<void> turn(bool on) async {
     isLoading = true;
     notifyListeners();
 
-    () async {
-      if (ipAddress != null) {
-        try {
-          await GetIt.I.get<WiFiLightController>().turn(ipAddress!, value);
-          _isOn = value;
-        } catch (e) {
-          try {
-            await GetIt.I.get<BluetoothLightController>().turn(_bluetoothDevice!, value);
-            _isOn = value;
-          } catch (e) {}
-        } finally {
-          isLoading = false;
-          notifyListeners();
-        }
+    if (ipAddress != null) {
+      // Prioritize Wi-Fi first.
+      try {
+        await locator.get<WiFiLightController>().turn(ipAddress!, on).timeout(Duration(seconds: 3));
+        _isOn = on;
+      } catch (_) {
+        // Fallback try with bluetooth.
+        await locator.get<BluetoothLightController>().turn(_bluetoothDevice!, on).timeout(Duration(seconds: 3));
+        _isOn = on;
+      } finally {
+        isLoading = false;
+        notifyListeners();
       }
-    }();
+      return;
+    }
+
+    if (bluetoothDevice != null) {
+      // Use bluetooth when there is no wifi.
+      try {
+        await locator.get<BluetoothLightController>().turn(_bluetoothDevice!, on).timeout(Duration(seconds: 3));
+        _isOn = on;
+      } finally {
+        isLoading = false;
+        notifyListeners();
+      }
+      return;
+    }
+
+    isLoading = false;
+    notifyListeners();
   }
 
   bool isReachableViaBluetooth() => _bluetoothDevice != null;

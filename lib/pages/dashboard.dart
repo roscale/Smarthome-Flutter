@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:smarthome/bluetooth_light_controller.dart';
 import 'package:smarthome/custom_widgets/light.dart';
 import 'package:provider/provider.dart';
+import 'package:smarthome/light_discovery.dart';
+import 'package:smarthome/locator.dart';
 import 'package:smarthome/providers/light_list.dart';
-import 'package:smarthome/wifi_light_controller.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -21,16 +20,7 @@ class _DashboardState extends State<Dashboard> {
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
-            onPressed: () async {
-              // Scan wifi
-              GetIt.I.get<WiFiLightController>().discoverLights();
-
-              // Scan bluetooth
-              await for (var info in GetIt.I.get<BluetoothLightController>().discoverLights()) {
-                var light = lightList.getLight(info.lightInfo.uuid) ?? lightList.addLight(info.lightInfo);
-                light.bluetoothDevice = info.bluetoothDevice;
-              }
-            },
+            onPressed: locator.get<LightDiscovery>().discoverLights,
           )
         ],
       ),

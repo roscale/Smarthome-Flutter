@@ -1,7 +1,7 @@
 class LightInfo {
   String uuid;
   String name;
-  int powerState;
+  bool power;
 
-  LightInfo(this.uuid, this.name, this.powerState);
+  LightInfo(this.uuid, this.name, this.power);
 }

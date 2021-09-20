@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smarthome/pages/configure_wifi.dart';
 import 'package:smarthome/providers/light_model.dart';
 
 class Light extends StatelessWidget {
@@ -15,7 +16,12 @@ class Light extends StatelessWidget {
         builder: (context, model, _) {
           return Card(
             child: InkWell(
-              onTap: model.isLoading ? null : () => model.isOn = !model.isOn,
+              onTap: model.isLoading ? null : () => model.turn(!model.isOn),
+              onLongPress: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ConfigureWiFi(lightModel: model),
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -43,7 +49,7 @@ class Light extends StatelessWidget {
                     Switch(
                       value: model.isOn,
                       // Disable interaction while data is being sent.
-                      onChanged: model.isLoading ? null : (value) => model.isOn = value,
+                      onChanged: model.isLoading ? null : (value) => model.turn(value),
                     ),
                   ],
                 ),

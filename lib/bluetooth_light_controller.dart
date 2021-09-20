@@ -35,7 +35,7 @@ class BluetoothLightController {
         connection.finish();
 
         var infoJson = jsonDecode(utf8.decode(data));
-        var lightInfo = LightInfo(infoJson["uuid"], infoJson["name"], infoJson["power_state"]);
+        var lightInfo = LightInfo(infoJson["uuid"], infoJson["name"], infoJson["power"]);
         yield LightInfoWithBluetoothDevice(lightInfo, result.device);
       } catch (e) {
         print(e);
@@ -47,8 +47,24 @@ class BluetoothLightController {
   Future<void> turn(BluetoothDevice device, bool on) async {
     var connection = await BluetoothConnection.toAddress(device.address);
     try {
-      connection.output.add(Uint8List.fromList('{"power_state": ${on ? 1 : 0}}'.codeUnits));
+      connection.output.add(Uint8List.fromList('{"power": $on}'.codeUnits));
       await connection.output.allSent;
+    } catch (e) {
+      print(e);
+      await connection.finish();
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getWiFiInfo(BluetoothDevice device) async {
+    var connection = await BluetoothConnection.toAddress(device.address);
+    try {
+      connection.output.add(Uint8List.fromList('{"wifi_info": 0}'.codeUnits));
+      await connection.output.allSent;
+      var data = await connection.input!.first;
+      var json = jsonDecode(utf8.decode(data));
+      connection.finish();
+      return json;
     } catch (e) {
       print(e);
       await connection.finish();

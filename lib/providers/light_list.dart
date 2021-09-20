@@ -14,7 +14,7 @@ class LightList with ChangeNotifier {
   }
 
   LightModel addLight(LightInfo info) {
-    var light = LightModel(info.uuid, info.name, info.powerState == 1);
+    var light = LightModel(info.uuid, info.name, info.power);
     lights.add(light);
     notifyListeners();
     return light;
