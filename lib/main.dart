@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smarthome/light_discovery.dart';
 import 'package:smarthome/locator.dart';
 import 'package:smarthome/pages/dashboard.dart';
-import 'package:provider/provider.dart';
 import 'package:smarthome/providers/light_list.dart';
 
 void main() async {
