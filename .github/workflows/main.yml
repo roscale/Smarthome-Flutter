@@ -30,13 +30,32 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
+
       - name: Patch for linux build
         run: |
           flutter doctor
           sudo apt-get update -y
           sudo apt-get install -y ninja-build libgtk-3-dev
           flutter doctor
+
       - run: flutter pub get
       - run: flutter build apk
       - run: flutter config --enable-linux-desktop
       - run: flutter build linux
+
+      - name: Archive Linux bundle
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          directory: 'build/linux/x64/release/bundle/'
+          filename: 'linux-release.zip'
+
+      - name: Generate artifacts
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/linux/x64/release/bundle/linux-release.zip
